@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 import protoo from 'protoo-server';
 import throttle from '@sitespeed.io/throttle';
-import mediasoup from 'mediasoup';
+//import mediasoup from 'mediasoup';
 import Config from './config'
 interface Input{
-  mediasoupWorker: mediasoup.Worker,
+  mediasoupWorker: any,
   roomId: String
 }
 interface constr{
@@ -14,7 +14,7 @@ interface constr{
   audioLevelObserver :any
 }
 interface prooto{
-   peerId : String, 
+   peerId : string, 
    consume : Boolean, 
    protooWebSocketTransport: protoo.WebSocketTransport 
 }
@@ -32,7 +32,7 @@ interface createBroad{
   type: 'plain' | 'webrtc'
   rtcpMux : Boolean
   comedia: Boolean
-  sctpCapabilities : Object
+  sctpCapabilities: any
 }
 interface connectBroad{
   broadcasterId : String
@@ -74,8 +74,8 @@ class Room extends EventEmitter {
   private _closed: Boolean;
   private _protooRoom: protoo.Room;
   private _broadcasters: Map<String, Object>;
-  private _mediasoupRouter: mediasoup.Router;
-  private _audioLevelObserver :mediasoup.AudioLevelObserver;
+  private _mediasoupRouter: any;
+  private _audioLevelObserver :any;
   private _networkThrottled : Boolean;
   static async create(input: Input){
 	
@@ -403,7 +403,8 @@ class Room extends EventEmitter {
 	 */
 	deleteBroadcaster(delBroad:delBroad){
     const { broadcasterId }= delBroad;
-		const broadcaster = this._broadcasters.get(broadcasterId);
+		let broadcaster: any 
+    broadcaster = this._broadcasters.get(broadcasterId);
 
 		if (!broadcaster)
 			throw new Error(`broadcaster with id "${broadcasterId}" does not exist`);
@@ -432,7 +433,8 @@ class Room extends EventEmitter {
 			comedia = true,
 			sctpCapabilities
 		} = createBroad;
-		const broadcaster = this._broadcasters.get(broadcasterId);
+		let broadcaster: any;
+    broadcaster= this._broadcasters.get(broadcasterId);
 
 		if (!broadcaster)
 			throw new Error(`broadcaster with id "${broadcasterId}" does not exist`);
@@ -445,7 +447,7 @@ class Room extends EventEmitter {
 				{
 					...Config.mediasoup.webRtcTransportOptions,
 					enableSctp     : Boolean(sctpCapabilities),
-					numSctpStreams : (sctpCapabilities || {}).numStreams
+					numSctpStreams : sctpCapabilities.numStreams || {}
 				};
 
 				const transport = await this._mediasoupRouter.createWebRtcTransport(
@@ -499,7 +501,8 @@ class Room extends EventEmitter {
 	 */
 	async createBroadcasterProducer(createBroadProd:createBroadProd){
     const{broadcasterId,kind,rtpParameters,transportId}= createBroadProd;
-		const broadcaster = this._broadcasters.get(broadcasterId);
+		let broadcaster: any;
+    broadcaster = this._broadcasters.get(broadcasterId);
 
 		if (!broadcaster)
 			throw new Error(`broadcaster with id "${broadcasterId}" does not exist`);
@@ -556,7 +559,8 @@ class Room extends EventEmitter {
 	 */
 	async connectBroadcasterTransport(connectBroad: connectBroad){
     const {broadcasterId,transportId,dtlsParameters}= connectBroad
-		const broadcaster = this._broadcasters.get(broadcasterId);
+		let broadcaster:any;
+    broadcaster= this._broadcasters.get(broadcasterId);
 
 		if (!broadcaster)
 			throw new Error(`broadcaster with id "${broadcasterId}" does not exist`);
@@ -580,7 +584,8 @@ class Room extends EventEmitter {
 	 */
 	async createBroadcasterConsumer(consumBroad:consumBroad){
     const {broadcasterId,transportId,producerId} = consumBroad;
-		const broadcaster = this._broadcasters.get(broadcasterId);
+		let broadcaster:any 
+    broadcaster= this._broadcasters.get(broadcasterId);
 
 		if (!broadcaster)
 			throw new Error(`broadcaster with id "${broadcasterId}" does not exist`);
@@ -629,7 +634,8 @@ class Room extends EventEmitter {
 	 */
 	async createBroadcasterDataConsumer(dataBroad: dataBroad){
     const { transportId,broadcasterId,dataProducerId } = dataBroad;
-		const broadcaster = this._broadcasters.get(broadcasterId);
+		let broadcaster:any 
+    broadcaster= this._broadcasters.get(broadcasterId);
 
 		if (!broadcaster)
 			throw new Error(`broadcaster with id "${broadcasterId}" does not exist`);
@@ -677,7 +683,8 @@ class Room extends EventEmitter {
 	 */
 	async createBroadcasterDataProducer(dataProBroad: dataProBroad){
     const {broadcasterId,transportId,appData,label,protocol,sctpStreamParameters} = dataProBroad
-		const broadcaster = this._broadcasters.get(broadcasterId);
+		let broadcaster:any 
+    broadcaster= this._broadcasters.get(broadcasterId);
 
 		if (!broadcaster)
 			throw new Error(`broadcaster with id "${broadcasterId}" does not exist`);
@@ -805,8 +812,8 @@ class Room extends EventEmitter {
 
 				// Reply now the request with the list of joined peers (all but the new one).
 				const peerInfos = joinedPeers
-					.filter((joinedPeer) => joinedPeer.id !== peer.id)
-					.map((joinedPeer) => ({
+					.filter((joinedPeer:any) => joinedPeer.id !== peer.id)
+					.map((joinedPeer:any) => ({
 						id          : joinedPeer.id,
 						displayName : joinedPeer.data.displayName,
 						device      : joinedPeer.data.device
@@ -817,8 +824,7 @@ class Room extends EventEmitter {
 				// Mark the new Peer as joined.
 				peer.data.joined = true;
 
-				for (const joinedPeer of joinedPeers)
-				{
+				for (const joinedPeer of joinedPeers as any){
 					// Create Consumers for existing Producers.
 					for (const producer of joinedPeer.data.producers.values())
 					{
@@ -831,7 +837,7 @@ class Room extends EventEmitter {
 					}
 
 					// Create DataConsumers for existing DataProducers.
-					for (const dataProducer of joinedPeer.data.dataProducers.values())
+					for (const dataProducer of joinedPeer.data.dataProducers.values() as any)
 					{
 						if (dataProducer.label === 'bot')
 							continue;
@@ -846,12 +852,12 @@ class Room extends EventEmitter {
 				}
 
 				// Create DataConsumers for bot DataProducer.
-				this._createDataConsumer(
-					{
-						dataConsumerPeer : peer,
-						dataProducerPeer : null,
-						dataProducer     : this._bot.dataProducer
-					});
+				// this._createDataConsumer(
+				// 	{
+				// 		dataConsumerPeer : peer,
+				// 		dataProducerPeer : null,
+				// 		dataProducer  
+				// 	});
 
 				// Notify the new Peer to all other Peers.
 				for (const otherPeer of this._getJoinedPeers({ excludePeer: peer }))
@@ -1518,7 +1524,8 @@ class Room extends EventEmitter {
 		}
 
 		// Must take the Transport the remote Peer is using for consuming.
-		const transport = Array.from(consumerPeer.data.transports.values())
+		let transport:any
+    transport= Array.from(consumerPeer.data.transports.values())
 			.find((t:any) => t.appData.consuming);
 
 		// This should not happen.
@@ -1661,7 +1668,8 @@ class Room extends EventEmitter {
 			return;
 
 		// Must take the Transport the remote Peer is using for consuming.
-		const transport = Array.from(dataConsumerPeer.data.transports.values())
+		let transport :any;
+    transport= Array.from(dataConsumerPeer.data.transports.values())
 			.find((t:any) => t.appData.consuming);
 
 		// This should not happen.

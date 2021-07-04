@@ -17,12 +17,12 @@ export const createExpressApp=async()=>{
 	 * existing room.
 	 */
   //works like middleware for this route
-	expressApp.param('roomId', (req, _, next, roomId) =>{
+	expressApp.param('roomId', (req:any, _:any, next:any, roomId:String) =>{
 			// The room must exist for all API requests.
 			if (!rooms.has(roomId)){
 				const error = new Error(`room with id "${roomId}" not found`);
 
-				error.status = 404;
+				//error.status = 404;
 				throw error;
 			}
 
@@ -35,7 +35,8 @@ export const createExpressApp=async()=>{
 	 * API GET resource that returns the mediasoup Router RTP capabilities of
 	 * the room.
 	 */
-	expressApp.get('/rooms/:roomId', (req, res) =>{
+	expressApp.get('/rooms/:roomId', (req:any, res:any) =>{
+		console.log('rooms')
 			const data = req.room.getRouterRtpCapabilities();
 
 			res.status(200).json(data);
@@ -44,7 +45,7 @@ export const createExpressApp=async()=>{
 	/**
 	 * POST API to create a Broadcaster.
 	 */
-	expressApp.post('/rooms/:roomId/broadcasters', async (req, res, next) =>{
+	expressApp.post('/rooms/:roomId/broadcasters', async (req:any, res:any, next:any) =>{
 			const {
 				id,
 				displayName,
@@ -74,7 +75,7 @@ export const createExpressApp=async()=>{
 	 * DELETE API to delete a Broadcaster.
 	 */
 	expressApp.delete(
-		'/rooms/:roomId/broadcasters/:broadcasterId', (req, res) =>
+		'/rooms/:roomId/broadcasters/:broadcasterId', (req:any, res:any) =>
 		{
 			const { broadcasterId } = req.params;
 
@@ -91,7 +92,7 @@ export const createExpressApp=async()=>{
 	 */
 	expressApp.post(
 		'/rooms/:roomId/broadcasters/:broadcasterId/transports',
-		async (req, res, next) =>
+		async (req:any, res:any, next:any) =>
 		{
 			const { broadcasterId } = req.params;
 			const { type, rtcpMux, comedia, sctpCapabilities } = req.body;
@@ -121,7 +122,7 @@ export const createExpressApp=async()=>{
 	 */
 	expressApp.post(
 		'/rooms/:roomId/broadcasters/:broadcasterId/transports/:transportId/connect',
-		async (req, res, next) =>
+		async (req:any, res:any, next:any) =>
 		{
 			const { broadcasterId, transportId } = req.params;
 			const { dtlsParameters } = req.body;
@@ -151,7 +152,7 @@ export const createExpressApp=async()=>{
 	 */
 	expressApp.post(
 		'/rooms/:roomId/broadcasters/:broadcasterId/transports/:transportId/producers',
-		async (req, res, next) =>
+		async (req:any, res:any, next:any) =>
 		{
 			const { broadcasterId, transportId } = req.params;
 			const { kind, rtpParameters } = req.body;
@@ -182,7 +183,7 @@ export const createExpressApp=async()=>{
 	 */
 	expressApp.post(
 		'/rooms/:roomId/broadcasters/:broadcasterId/transports/:transportId/consume',
-		async (req, res, next) =>
+		async (req:any, res:any, next:any) =>
 		{
 			const { broadcasterId, transportId } = req.params;
 			const { producerId } = req.query;
@@ -212,7 +213,7 @@ export const createExpressApp=async()=>{
 	 */
 	expressApp.post(
 		'/rooms/:roomId/broadcasters/:broadcasterId/transports/:transportId/consume/data',
-		async (req, res, next) =>
+		async (req:any, res:any, next:any) =>
 		{
 			const { broadcasterId, transportId } = req.params;
 			const { dataProducerId } = req.body;
@@ -240,7 +241,7 @@ export const createExpressApp=async()=>{
 	 */
 	expressApp.post(
 		'/rooms/:roomId/broadcasters/:broadcasterId/transports/:transportId/produce/data',
-		async (req, res, next) =>
+		async (req:any, res:any, next:any) =>
 		{
 			const { broadcasterId, transportId } = req.params;
 			const { label, protocol, sctpStreamParameters, appData } = req.body;
@@ -269,21 +270,25 @@ export const createExpressApp=async()=>{
 	 * Error handler.
 	 */
 	expressApp.use(
-		(error, req, res, next) =>
+		(error: Error, _:any, res:any, next:any) =>
 		{
 			if (error)
 			{
-				logger.warn('Express app %s', String(error));
+				console.log('Express app %s', String(error));
 
-				error.status = error.status || (error.name === 'TypeError' ? 400 : 500);
+				//error.status = error.status || (error.name === 'TypeError' ? 400 : 500);
 
 				res.statusMessage = error.message;
-				res.status(error.status).send(String(error));
+				res.status( (error.name === 'TypeError' ? 400 : 500)).send(String(error));
 			}
 			else
 			{
 				next();
 			}
 		});
+		const port =4443
+		expressApp.listen(port, () => {
+			console.log(`listening at localhost port 4443 sirrr${port}`)
+		})
 }
 export {expressApp, rooms};

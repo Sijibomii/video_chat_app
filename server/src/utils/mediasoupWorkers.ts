@@ -1,21 +1,22 @@
 import Config from './config';
-import mediasoup from 'mediasoup';
-
+// import mediasoup from "mediasoup";
+const mediasoup= require('mediasoup');
 export const mediasoupWorkers: any = [];
 
 export const runMediasoupWorkers= async ()=>{
   const { numWorkers } = Config.mediasoup;
   console.log('running %d mediasoup Workers...', numWorkers);
   for (let i = 0; i < numWorkers; ++i){
-		const worker = await mediasoup.createWorker(
-			{
-				logLevel   : Config.mediasoup.workerSettings.logLevel,
-				logTags    : Config.mediasoup.workerSettings.logTags,
+		const worker = await mediasoup.createWorker({
+			// @ts-ignore
+				logLevel   : (Config.mediasoup.workerSettings.logLevel) as String,
+				// @ts-ignore
+				logTags    : (Config.mediasoup.workerSettings.logTags) as String[] ,
 				rtcMinPort : Number(Config.mediasoup.workerSettings.rtcMinPort),
 				rtcMaxPort : Number(Config.mediasoup.workerSettings.rtcMaxPort)
 			});
 
-		worker.on('died', () =>
+		worker.on('died', () => 
 		{
 			console.error('mediasoup Worker died, exiting  in 2 seconds... [pid:%d]', worker.pid);
 			setTimeout(() => process.exit(1), 2000);

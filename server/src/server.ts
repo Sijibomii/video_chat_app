@@ -1,6 +1,6 @@
 import {runMediasoupWorkers } from './utils/mediasoupWorkers';
 import { createExpressApp,rooms} from './utils/express';
-import { runHttpsServer} from './utils/http'
+//import { runHttpsServer} from './utils/http'
 import {runProtooWebSocketServer} from './utils/protooServer'
 //logger
 //import  Logger from './utils/logger';
@@ -15,7 +15,7 @@ async function run(){
 	await createExpressApp();
 
 	// Run HTTPS server.
-	await runHttpsServer();
+	//await runHttpsServer();
 
 	// Run a protoo WebSocketServer.
 	await runProtooWebSocketServer();
@@ -29,7 +29,7 @@ async function run(){
 		}
 	}, 120000);
 }
-
+ 
 
 
 

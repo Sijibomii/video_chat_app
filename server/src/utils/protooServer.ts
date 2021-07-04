@@ -2,7 +2,8 @@
  * Create a protoo WebSocketServer to allow WebSocket connections from browsers.
  */
 import  protoo from 'protoo-server';
-import {httpsServer} from './http'
+//import {httpsServer} from './http'
+import { expressApp} from './express'
 import  url from 'url';
 import  { AwaitQueue } from 'awaitqueue';
 import { rooms } from './express';
@@ -15,7 +16,7 @@ const runProtooWebSocketServer= async()=>{
    console.log('running protoo WebSocketServer...');
  
    // Create the protoo WebSocket server.
-   protooWebSocketServer = new protoo.WebSocketServer(httpsServer,
+   protooWebSocketServer = new protoo.WebSocketServer(expressApp,
      {
        maxReceivedFrameSize     : 960000, // 960 KBytes.
        maxReceivedMessageSize   : 960000,
@@ -27,7 +28,8 @@ const runProtooWebSocketServer= async()=>{
    protooWebSocketServer.on('connectionrequest', (info:any, accept:any, reject:any) =>{
      // The client indicates the roomId and peerId in the URL query.
      const u = url.parse(info.request.url, true);
-     const roomId = u.query['roomId'];
+     let  roomId : String
+     roomId = u.query['roomId']!.toString();
      const peerId = u.query['peerId'];
  
      if (!roomId || !peerId)
@@ -71,7 +73,7 @@ const runProtooWebSocketServer= async()=>{
    return worker;
  }
  interface getOrCreateRoom{
-   roomId: String | string[]
+   roomId: String
  }
 async function getOrCreateRoom(getOrCreateRoom: getOrCreateRoom){
   const { roomId }= getOrCreateRoom
@@ -82,7 +84,7 @@ async function getOrCreateRoom(getOrCreateRoom: getOrCreateRoom){
 	{
 		console.log('creating a new Room [roomId:%s]', roomId);
 
-		const mediasoupWorker = getMediasoupWorker();
+		const mediasoupWorker = getMediasoupWorker(); 
 
 		room = await Room.create({ mediasoupWorker, roomId });
 

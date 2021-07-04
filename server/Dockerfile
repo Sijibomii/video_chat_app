@@ -7,10 +7,12 @@ COPY package.json package-lock.json ./
 
 RUN npm i
 
+RUN npm install mediasoup@3 --save
+
 COPY . .
 
 RUN npm run build
 
 ENV NODE_ENV production
-CMD [ "node", "dist/src/server.js" ]
+CMD [ "node", "dist/server.js" ]
 USER node

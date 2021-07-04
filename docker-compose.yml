@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  node-media-server:
+    build:
+      context: ./server
+    command: node dist/server.js 0.0.0.0:4443
+    container_name: media-server
+    ports: 
+      - 4443:4443
+  media-client:
+    build:
+      context: ./client
+    command: yarn start
+    container_name: media-client
+    depends_on: 
+      - node-media-server
+    ports: 
+      - 3001:3000
+    stdin_open: true
+      

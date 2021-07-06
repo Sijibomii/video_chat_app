@@ -1,5 +1,5 @@
 import bowser from 'bowser';
-
+//bowser help determine the type of browser been used by client
 // TODO: For testing.
 window.BOWSER = bowser;
 
@@ -7,7 +7,7 @@ export default function(){
 	const ua = navigator.userAgent;
 	const browser = bowser.getParser(ua);
 	let flag;
-
+	//filter based on users browser
 	if (browser.satisfies({ chrome: '>=0', chromium: '>=0' }))
 		flag = 'chrome';
 	else if (browser.satisfies({ firefox: '>=0' }))

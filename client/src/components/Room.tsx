@@ -1,30 +1,18 @@
 import React, { ReactElement } from "react";
 import { withRoomContext } from '../RoomContext'
-import { connect, MapDispatchToPropsParam } from 'react-redux';
+import { connect, MapDispatchToPropsParam } from 'react-redux';//read on react-redux
 import * as requestActions from '../redux/requestActions';
 interface RoomProps {
-  // roomId: String
-	// peerId: String
-	// displayName: String
-	// device
-	// handlerName : handler
-	// useSimulcast
-	// useSharingSimulcast
-	// forceTcp
-	// produce
-	// consume
-	// forceH264
-	// forceVP9
-	// svc
-	// datachannel
-	// externalVideo
-	// e2eKey
   roomClient:{
 
   }
+  room:any
+  me:any
+  amActiveSpeaker:any
+  onRoomLinkCopy:any
 }
 type Room= ReactElement<any, any> | null
-const Room: React.FC<RoomProps> = ({roomClient}): Room  => {
+const Room: React.FC<RoomProps> = ({roomClient,amActiveSpeaker,me,onRoomLinkCopy}): Room  => {
 return(
     <>
     </>

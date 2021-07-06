@@ -8,27 +8,29 @@ import {
   AnyAction,
 	applyMiddleware as applyReduxMiddleware,
 	createStore as createReduxStore,
+  Dispatch,
   EmptyObject,
   Store
 } from 'redux';
-import * as cookiesManager from './cookiesManager';//check what js-cookie does
+import * as cookiesManager from './cookiesManager';
 import reducers from './redux/reducers';
-import * as faceapi from 'face-api.js';//check more on face-api too
-import randomName from './randomName';//check what pokemon does, check the github issue too
-import deviceInfo from './deviceInfo';//check what browser does, read through this...
+import * as faceapi from 'face-api.js';
+import randomName from './randomName';
+import deviceInfo from './deviceInfo';
 import * as stateActions from './redux/stateActions';//actions for redux read through..
-import RoomContext from './RoomContext';// check what react.context does
+import RoomContext from './RoomContext';
 import RoomClient from './RoomClient';
-import { Room } from './components/Room';
+import Room  from './components/Room';
 //read up on the e2e.ts 
-type t={
+type t={  
   timeout: number
   bot: boolean
 }
 declare global {
   interface Window {
-      STORE:Store<EmptyObject, AnyAction> & {
-        dispatch: unknown;
+      STORE:Store<EmptyObject, AnyAction> | {
+        dispatch: unknown | Dispatch<AnyAction>
+				
     }
     SHOW_INFO: boolean
     NETWORK_THROTTLE_SECRET: String
@@ -87,7 +89,7 @@ async function run(){
 	const e2eKey = urlParser.query.e2eKey;
 
   // Enable face detection on demand.
-	if (faceDetection) await faceapi.loadTinyFaceDetectorModel('/resources/face-detector-models');
+	if (faceDetection) await faceapi.loadTinyFaceDetectorModel('./resources/face-detector-models');
 
   if (info){
 		window.SHOW_INFO = true;
@@ -182,7 +184,7 @@ async function run(){
 	 render(
 	 	<Provider store={store}>
 	 		<RoomContext.Provider value={roomClient}>
-	 			<Room roomClient={roomClient}/>
+	 			<Room />
 	 		</RoomContext.Provider>
 	 	</Provider>,
 	 	 document.getElementById('root')

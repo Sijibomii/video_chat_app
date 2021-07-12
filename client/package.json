@@ -10,6 +10,11 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-transition-group":"^4.4.1",
+    "@types/domready":"^1.0.0",
+    "@types/js-cookie": "^2.2.6",
+    "@types/random-string": "^0.0.28",
+    "@types/react-spinner": "^0.2.0",
     "bowser": "^2.11.0",
     "classnames": "^2.3.1",
     "debug": "^4.3.1",
@@ -26,6 +31,7 @@
     "react-draggable": "^4.4.3",
     "react-dropzone": "^11.3.4",
     "react-redux": "^7.2.4",
+    "react-if": "^4.0.1",
     "react-scripts": "4.0.3",
     "react-spinner": "^0.2.7",
     "react-tooltip": "^4.2.21",
@@ -38,6 +44,7 @@
     "url-parse": "^1.5.1",
     "web-vitals": "^1.0.1"
   },
+  
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
